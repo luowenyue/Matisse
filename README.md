@@ -1,11 +1,11 @@
 ![Image](/image/banner.png)
 
 # Matisse
-[![Build Status](https://travis-ci.org/zhihu/Matisse.svg)](https://travis-ci.org/zhihu/Matisse) [ ![Download](https://api.bintray.com/packages/zhihu/maven/matisse/images/download.svg) ](https://bintray.com/zhihu/maven/matisse/_latestVersion)
+[![Build Status](https://travis-ci.org/zhihu/Matisse.svg)](https://travis-ci.org/zhihu/Matisse) [ ![Download](https://api.bintray.com/packages/yinfuyuan/maven/matisse/images/download.svg) ](https://bintray.com/yinfuyuan/maven/matisse/_latestVersion)
 
-Matisse is a well-designed local image and video selector for Android. You can  
+Matisse is a well-designed local image and video and audio selector for Android. You can
 - Use it in Activity or Fragment
-- Select images including JPEG, PNG, GIF and videos including MPEG, MP4 
+- Select images including JPEG, PNG, GIF and videos including MPEG, MP4 and audios including AMR, MP3
 - Apply different themes, including two built-in themes and custom themes
 - Different image loaders
 - Define custom filter rules
@@ -21,14 +21,15 @@ Gradle:
 ```groovy
 repositories {
     jcenter()
+    maven { url "https://dl.bintray.com/yinfuyuan/maven" } // If you cannot download, please add the source
 }
 
 dependencies {
-    implementation 'com.zhihu.android:matisse:$latest_version'
+    implementation 'com.github.zhihu:matisse:$latest_version'
 }
 ```
 
-Check out [Matisse releases](https://github.com/zhihu/Matisse/releases) to see more unstable versions.
+Check out [Matisse releases](https://github.com/yinfuyuan/Matisse/releases) to see more unstable versions.
 
 ## ProGuard
 If you use [Glide](https://github.com/bumptech/glide) as your image engine, add rules as Glide's README says.  
@@ -69,6 +70,20 @@ Matisse.from(MainActivity.this)
         .showPreview(false) // Default is `true`
         .forResult(REQUEST_CODE_CHOOSE);
 ```
+
+#### Audio usage snippet
+------
+
+```java
+Matisse.from(MainActivity.this)
+        .choose(MimeType.ofAudio())
+        .countable(true)
+        .maxSelectable(9)
+        .imageEngine(new GlideEngine())
+        .audioThumbnail(getResources().getDrawable(R.drawable.ic_empty_zhihu)) // The thumbnail instead of audio in preview
+        .audioPlaceholder(getResources().getDrawable(R.drawable.ic_empty_dracula)) // the placeholder instead of audio in list view
+        .forResult(REQUEST_CODE_CHOOSE);
+```
  
 #### Themes
 There are two built-in themes you can use to start `MatisseActivity`:
@@ -94,10 +109,10 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 ```
 
 #### More
-Find more details about Matisse in [wiki](https://github.com/zhihu/Matisse/wiki).
+Find more details about Matisse in [wiki](https://github.com/yinfuyuan/Matisse/wiki).
 
 ## Contributing
-[Matisse is an Open Source Project](https://github.com/zhihu/Matisse/blob/master/CONTRIBUTING.md)
+[Matisse is an Open Source Project](https://github.com/yinfuyuan/Matisse/blob/master/CONTRIBUTING.md)
 
 ## Thanks
 This library is inspired by [Laevatein](https://github.com/nohana/Laevatein) and uses some of its source code.

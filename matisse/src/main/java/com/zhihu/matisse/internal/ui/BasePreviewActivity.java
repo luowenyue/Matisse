@@ -335,7 +335,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
             mSize.setVisibility(View.GONE);
         }
 
-        if (item.isVideo()) {
+        if (item.isVideo() || item.isAudio()) {
             mOriginalLayout.setVisibility(View.GONE);
         } else if (mSpec.originalable) {
             mOriginalLayout.setVisibility(View.VISIBLE);

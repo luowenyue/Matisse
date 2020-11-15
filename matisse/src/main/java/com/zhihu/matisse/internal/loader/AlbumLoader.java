@@ -72,17 +72,22 @@ public class AlbumLoader extends CursorLoader {
     private static final String SELECTION =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                    + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?)"
                     + " AND " + MediaStore.MediaColumns.SIZE + ">0"
                     + ") GROUP BY (bucket_id";
     private static final String SELECTION_29 =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                    + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?)"
                     + " AND " + MediaStore.MediaColumns.SIZE + ">0";
     private static final String[] SELECTION_ARGS = {
             String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
             String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
+            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO),
     };
     // =============================================
 
@@ -147,6 +152,11 @@ public class AlbumLoader extends CursorLoader {
                     ? SELECTION_FOR_SINGLE_MEDIA_TYPE : SELECTION_FOR_SINGLE_MEDIA_TYPE_29;
             selectionArgs = getSelectionArgsForSingleMediaType(
                     MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+        } else if (SelectionSpec.getInstance().onlyShowAudios()) {
+            selection = beforeAndroidTen()
+                    ? SELECTION_FOR_SINGLE_MEDIA_TYPE : SELECTION_FOR_SINGLE_MEDIA_TYPE_29;
+            selectionArgs = getSelectionArgsForSingleMediaType(
+                    MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO);
         } else {
             selection = beforeAndroidTen() ? SELECTION : SELECTION_29;
             selectionArgs = SELECTION_ARGS;
@@ -270,6 +280,8 @@ public class AlbumLoader extends CursorLoader {
             contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         } else if (MimeType.isVideo(mimeType)) {
             contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        } else if (MimeType.isAudio(mimeType)) {
+            contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         } else {
             // ?
             contentUri = MediaStore.Files.getContentUri("external");

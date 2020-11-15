@@ -18,6 +18,7 @@ package com.zhihu.matisse;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -151,8 +152,8 @@ public final class SelectionCreator {
     public SelectionCreator maxSelectable(int maxSelectable) {
         if (maxSelectable < 1)
             throw new IllegalArgumentException("maxSelectable must be greater than or equal to one");
-        if (mSelectionSpec.maxImageSelectable > 0 || mSelectionSpec.maxVideoSelectable > 0)
-            throw new IllegalStateException("already set maxImageSelectable and maxVideoSelectable");
+        if (mSelectionSpec.maxImageSelectable > 0 || mSelectionSpec.maxVideoSelectable > 0 || mSelectionSpec.maxAudioSelectable > 0)
+            throw new IllegalStateException("already set maxImageSelectable and maxVideoSelectable and maxAudioSelectable");
         mSelectionSpec.maxSelectable = maxSelectable;
         return this;
     }
@@ -163,14 +164,16 @@ public final class SelectionCreator {
      *
      * @param maxImageSelectable Maximum selectable count for image.
      * @param maxVideoSelectable Maximum selectable count for video.
+     * @param maxAudioSelectable Maximum selectable count for audio.
      * @return  {@link SelectionCreator} for fluent API.
      */
-    public SelectionCreator maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
-        if (maxImageSelectable < 1 || maxVideoSelectable < 1)
+    public SelectionCreator maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable, int maxAudioSelectable) {
+        if (maxImageSelectable < 1 || maxVideoSelectable < 1 || maxAudioSelectable < 1)
             throw new IllegalArgumentException(("max selectable must be greater than or equal to one"));
         mSelectionSpec.maxSelectable = -1;
         mSelectionSpec.maxImageSelectable = maxImageSelectable;
         mSelectionSpec.maxVideoSelectable = maxVideoSelectable;
+        mSelectionSpec.maxAudioSelectable = maxAudioSelectable;
         return this;
     }
 
@@ -366,6 +369,28 @@ public final class SelectionCreator {
 
     public SelectionCreator showPreview(boolean showPreview) {
         mSelectionSpec.showPreview = showPreview;
+        return this;
+    }
+
+    /**
+     * Sets an {@link Drawable} to display audio placeholder in media grid.
+     *
+     * @param audioPlaceholder The drawable to display as audio placeholder in media grid.
+     * @return {@link SelectionCreator} for fluent API.
+     */
+    public SelectionCreator audioPlaceholder(Drawable audioPlaceholder) {
+        mSelectionSpec.audioPlaceholder = audioPlaceholder;
+        return this;
+    }
+
+    /**
+     * Sets an {@link Drawable} to display audio thumbnail in preview item.
+     *
+     * @param audioThumbnail The drawable to display as audio thumbnail in preview item.
+     * @return {@link SelectionCreator} for fluent API.
+     */
+    public SelectionCreator audioThumbnail(Drawable audioThumbnail) {
+        mSelectionSpec.audioThumbnail = audioThumbnail;
         return this;
     }
 }

@@ -26,6 +26,8 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Album;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
@@ -62,6 +64,17 @@ public class AlbumsAdapter extends CursorAdapter {
         Album album = Album.valueOf(cursor);
         ((TextView) view.findViewById(R.id.album_name)).setText(album.getDisplayName(context));
         ((TextView) view.findViewById(R.id.album_media_count)).setText(String.valueOf(album.getCount()));
+
+        if(SelectionSpec.getInstance().onlyShowAudios()) {
+            Glide.with(context)
+                    .asDrawable()
+                    .load(mPlaceholder)
+                    .apply(new RequestOptions()
+                            .override(context.getResources().getDimensionPixelSize(R.dimen.media_grid_size))
+                            .centerCrop())
+                    .into((ImageView) view.findViewById(R.id.album_cover));
+            return;
+        }
 
         // do not need to load animated Gif
         SelectionSpec.getInstance().imageEngine.loadThumbnail(context, context.getResources().getDimensionPixelSize(R

@@ -55,6 +55,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.zhihu).setOnClickListener(this);
         findViewById(R.id.dracula).setOnClickListener(this);
         findViewById(R.id.only_gif).setOnClickListener(this);
+        findViewById(R.id.audio).setOnClickListener(this);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -133,6 +134,19 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                         .originalEnable(true)
                         .maxOriginalSize(10)
                         .autoHideToolbarOnSingleTap(true)
+                        .forResult(REQUEST_CODE_CHOOSE);
+                break;
+            case R.id.audio:
+                Matisse.from(SampleActivity.this)
+                        .choose(MimeType.ofAudio())
+                        .theme(R.style.Matisse_Dracula)
+                        .countable(false)
+                        .maxSelectable(9)
+                        .showSingleMediaType(true)
+                        .maxOriginalSize(10)
+                        .imageEngine(new GlideEngine())
+                        .audioThumbnail(getResources().getDrawable(R.drawable.ic_empty_zhihu))
+                        .audioPlaceholder(getResources().getDrawable(R.drawable.ic_empty_dracula))
                         .forResult(REQUEST_CODE_CHOOSE);
                 break;
             default:

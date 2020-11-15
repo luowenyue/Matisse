@@ -25,8 +25,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
@@ -63,13 +68,14 @@ public class PreviewItemFragment extends Fragment {
         }
 
         View videoPlayButton = view.findViewById(R.id.video_play_button);
-        if (item.isVideo()) {
+        if (item.isVideo() || item.isAudio()) {
             videoPlayButton.setVisibility(View.VISIBLE);
             videoPlayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String type = item.isAudio() ? "audio/*" : "video/*";
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(item.uri, "video/*");
+                    intent.setDataAndType(item.uri, type);
                     try {
                         startActivity(intent);
                     } catch (ActivityNotFoundException e) {
@@ -79,6 +85,20 @@ public class PreviewItemFragment extends Fragment {
             });
         } else {
             videoPlayButton.setVisibility(View.GONE);
+        }
+
+        TextView audioName = view.findViewById(R.id.audio_name);
+        if (item.isAudio()) {
+            int resourceId = getActivity().getResources().getIdentifier("status_bar_height", "dimen", "android");
+            int statusBarHeight = getActivity().getResources().getDimensionPixelSize(resourceId);
+            LinearLayout linearLayout = view.findViewById(R.id.audio_layout);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
+            params.setMargins(0, statusBarHeight, 0, 0);
+            linearLayout.setLayoutParams(params);
+            audioName.setVisibility(View.VISIBLE);
+            audioName.setText(item.displayName);
+        } else {
+            audioName.setVisibility(View.GONE);
         }
 
         ImageViewTouch image = (ImageViewTouch) view.findViewById(R.id.image_view);
@@ -93,11 +113,21 @@ public class PreviewItemFragment extends Fragment {
             }
         });
 
-        Point size = PhotoMetadataUtils.getBitmapSize(item.getContentUri(), getActivity());
-        if (item.isGif()) {
+        if (item.isAudio()) {
+            if (SelectionSpec.getInstance().audioThumbnail != null) {
+                Glide.with(getActivity())
+                        .load(SelectionSpec.getInstance().audioThumbnail)
+                        .apply(new RequestOptions()
+                                .priority(Priority.HIGH)
+                                .fitCenter())
+                        .into(image);
+            }
+        } else if (item.isGif()) {
+            Point size = PhotoMetadataUtils.getBitmapSize(item.getContentUri(), getActivity());
             SelectionSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y, image,
                     item.getContentUri());
         } else {
+            Point size = PhotoMetadataUtils.getBitmapSize(item.getContentUri(), getActivity());
             SelectionSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y, image,
                     item.getContentUri());
         }

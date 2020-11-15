@@ -90,6 +90,26 @@ public enum MimeType {
     )),
     AVI("video/avi", arraySetOf(
             "avi"
+    )),
+
+    // ============== audios ==============
+    AAC("audio/aac", arraySetOf(
+            "aac"
+    )),
+    M4A("audio/m4a", arraySetOf(
+            "m4a"
+    )),
+    MP3("audio/mp3", arraySetOf(
+            "mp3"
+    )),
+    AMR("audio/amr", arraySetOf(
+            "amr"
+    )),
+    WAV("audio/wav", arraySetOf(
+            "wav"
+    )),
+    AWB("audio/awb", arraySetOf(
+            "awb"
     ));
 
     private final String mMimeTypeName;
@@ -124,6 +144,10 @@ public enum MimeType {
         return EnumSet.of(MPEG, MP4, QUICKTIME, THREEGPP, THREEGPP2, MKV, WEBM, TS, AVI);
     }
 
+    public static EnumSet<MimeType> ofAudio() {
+        return EnumSet.of(AAC, M4A, MP3, AMR, WAV, AWB);
+    }
+
     public static boolean isImage(String mimeType) {
         if (mimeType == null) return false;
         return mimeType.startsWith("image");
@@ -132,6 +156,11 @@ public enum MimeType {
     public static boolean isVideo(String mimeType) {
         if (mimeType == null) return false;
         return mimeType.startsWith("video");
+    }
+
+    public static boolean isAudio(String mimeType) {
+        if (mimeType == null) return false;
+        return mimeType.startsWith("audio");
     }
 
     public static boolean isGif(String mimeType) {

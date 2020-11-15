@@ -51,9 +51,13 @@ public class SelectedItemCollection {
      */
     public static final int COLLECTION_VIDEO = 0x01 << 1;
     /**
+     * Collection only with videos
+     */
+    public static final int COLLECTION_AUDIO = 0x01 << 2;
+    /**
      * Collection with images and videos.
      */
-    public static final int COLLECTION_MIXED = COLLECTION_IMAGE | COLLECTION_VIDEO;
+    public static final int COLLECTION_MIXED = COLLECTION_IMAGE | COLLECTION_VIDEO | COLLECTION_AUDIO;
     private final Context mContext;
     private Set<Item> mItems;
     private int mCollectionType = COLLECTION_UNDEFINED;
@@ -90,7 +94,7 @@ public class SelectedItemCollection {
 
     public boolean add(Item item) {
         if (typeConflict(item)) {
-            throw new IllegalArgumentException("Can't select images and videos at the same time.");
+            throw new IllegalArgumentException("Can't select images and videos and audios at the same time.");
         }
         boolean added = mItems.add(item);
         if (added) {
@@ -99,13 +103,19 @@ public class SelectedItemCollection {
                     mCollectionType = COLLECTION_IMAGE;
                 } else if (item.isVideo()) {
                     mCollectionType = COLLECTION_VIDEO;
+                } else if (item.isAudio()) {
+                    mCollectionType = COLLECTION_AUDIO;
                 }
             } else if (mCollectionType == COLLECTION_IMAGE) {
-                if (item.isVideo()) {
+                if (item.isVideo() || item.isAudio()) {
                     mCollectionType = COLLECTION_MIXED;
                 }
             } else if (mCollectionType == COLLECTION_VIDEO) {
-                if (item.isImage()) {
+                if (item.isImage() || item.isAudio()) {
+                    mCollectionType = COLLECTION_MIXED;
+                }
+            } else if (mCollectionType == COLLECTION_AUDIO) {
+                if (item.isImage() || item.isVideo()) {
                     mCollectionType = COLLECTION_MIXED;
                 }
             }
@@ -210,6 +220,8 @@ public class SelectedItemCollection {
             return spec.maxImageSelectable;
         } else if (mCollectionType == COLLECTION_VIDEO) {
             return spec.maxVideoSelectable;
+        } else if (mCollectionType == COLLECTION_AUDIO) {
+            return spec.maxAudioSelectable;
         } else {
             return spec.maxSelectable;
         }
@@ -222,27 +234,32 @@ public class SelectedItemCollection {
     private void refineCollectionType() {
         boolean hasImage = false;
         boolean hasVideo = false;
+        boolean hasAudio = false;
         for (Item i : mItems) {
             if (i.isImage() && !hasImage) hasImage = true;
             if (i.isVideo() && !hasVideo) hasVideo = true;
+            if (i.isAudio() && !hasAudio) hasAudio = true;
         }
-        if (hasImage && hasVideo) {
+        if ((hasImage && (hasVideo || hasAudio)) || (hasVideo && hasAudio)) {
             mCollectionType = COLLECTION_MIXED;
         } else if (hasImage) {
             mCollectionType = COLLECTION_IMAGE;
         } else if (hasVideo) {
             mCollectionType = COLLECTION_VIDEO;
+        } else if (hasAudio) {
+            mCollectionType = COLLECTION_AUDIO;
         }
     }
 
     /**
-     * Determine whether there will be conflict media types. A user can only select images and videos at the same time
+     * Determine whether there will be conflict media types. A user can only select images and videos and audios at the same time
      * while {@link SelectionSpec#mediaTypeExclusive} is set to false.
      */
     public boolean typeConflict(Item item) {
         return SelectionSpec.getInstance().mediaTypeExclusive
-                && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_MIXED))
-                || (item.isVideo() && (mCollectionType == COLLECTION_IMAGE || mCollectionType == COLLECTION_MIXED)));
+                && ((item.isImage() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_AUDIO || mCollectionType == COLLECTION_MIXED))
+                || (item.isVideo() && (mCollectionType == COLLECTION_IMAGE || mCollectionType == COLLECTION_AUDIO || mCollectionType == COLLECTION_MIXED))
+                || (item.isAudio() && (mCollectionType == COLLECTION_VIDEO || mCollectionType == COLLECTION_IMAGE || mCollectionType == COLLECTION_MIXED)));
     }
 
     public int count() {

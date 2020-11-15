@@ -25,6 +25,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
@@ -35,6 +37,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     private CheckView mCheckView;
     private ImageView mGifTag;
     private TextView mVideoDuration;
+    private TextView mAudioName;
 
     private Item mMedia;
     private PreBindInfo mPreBindInfo;
@@ -57,6 +60,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
         mCheckView = (CheckView) findViewById(R.id.check_view);
         mGifTag = (ImageView) findViewById(R.id.gif);
         mVideoDuration = (TextView) findViewById(R.id.video_duration);
+        mAudioName = (TextView) findViewById(R.id.audio_name);
 
         mThumbnail.setOnClickListener(this);
         mCheckView.setOnClickListener(this);
@@ -83,6 +87,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
         initCheckView();
         setImage();
         setVideoDuration();
+        setAudioName();
     }
 
     public Item getMedia() {
@@ -110,7 +115,18 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     }
 
     private void setImage() {
-        if (mMedia.isGif()) {
+        if (mMedia.isAudio()) {
+            Drawable drawable = SelectionSpec.getInstance().audioPlaceholder == null
+                    ? mPreBindInfo.mPlaceholder : SelectionSpec.getInstance().audioPlaceholder;
+            Glide.with(getContext())
+                    .asDrawable()
+                    .load(drawable)
+                    .apply(new RequestOptions()
+                            .override(mPreBindInfo.mResize)
+                            .placeholder(mPreBindInfo.mPlaceholder)
+                            .centerCrop())
+                    .into(mThumbnail);
+        } else if (mMedia.isGif()) {
             SelectionSpec.getInstance().imageEngine.loadGifThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getContentUri());
         } else {
@@ -120,11 +136,20 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     }
 
     private void setVideoDuration() {
-        if (mMedia.isVideo()) {
+        if (mMedia.isVideo() || mMedia.isAudio()) {
             mVideoDuration.setVisibility(VISIBLE);
             mVideoDuration.setText(DateUtils.formatElapsedTime(mMedia.duration / 1000));
         } else {
             mVideoDuration.setVisibility(GONE);
+        }
+    }
+
+    private void setAudioName() {
+        if (mMedia.isAudio()) {
+            mAudioName.setVisibility(VISIBLE);
+            mAudioName.setText(mMedia.displayName);
+        } else {
+            mAudioName.setVisibility(GONE);
         }
     }
 

@@ -38,6 +38,20 @@
         android:visibility="gone"/>
 
     <TextView
+        android:id="@+id/audio_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:maxEms="4"
+        android:ellipsize="end"
+        android:visibility="gone"/>
+
+    <TextView
         android:id="@+id/video_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

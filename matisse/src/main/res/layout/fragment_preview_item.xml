@@ -18,6 +18,27 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/audio_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/audio_name"
+                android:layout_width="wrap_content"
+                android:layout_height="?actionBarSize"
+                android:gravity="center"
+                android:textColor="?attr/album.element.color"
+                android:textSize="18sp"
+                android:singleLine="true"
+                android:maxEms="12"
+                android:ellipsize="end" />
+        </LinearLayout>
+    </LinearLayout>
+
     <it.sephiroth.android.library.imagezoom.ImageViewTouch
         android:id="@+id/image_view"
         android:layout_width="match_parent"

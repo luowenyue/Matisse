@@ -17,6 +17,7 @@
 package com.zhihu.matisse.internal.entity;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.StyleRes;
 
@@ -43,6 +44,7 @@ public final class SelectionSpec {
     public int maxSelectable;
     public int maxImageSelectable;
     public int maxVideoSelectable;
+    public int maxAudioSelectable;
     public List<Filter> filters;
     public boolean capture;
     public CaptureStrategy captureStrategy;
@@ -57,6 +59,8 @@ public final class SelectionSpec {
     public int originalMaxSize;
     public OnCheckedListener onCheckedListener;
     public boolean showPreview;
+    public Drawable audioThumbnail;
+    public Drawable audioPlaceholder;
 
     private SelectionSpec() {
     }
@@ -81,6 +85,7 @@ public final class SelectionSpec {
         maxSelectable = 1;
         maxImageSelectable = 0;
         maxVideoSelectable = 0;
+        maxAudioSelectable = 0;
         filters = null;
         capture = false;
         captureStrategy = null;
@@ -93,10 +98,12 @@ public final class SelectionSpec {
         autoHideToobar = false;
         originalMaxSize = Integer.MAX_VALUE;
         showPreview = true;
+        audioThumbnail = null;
+        audioPlaceholder = null;
     }
 
     public boolean singleSelectionModeEnabled() {
-        return !countable && (maxSelectable == 1 || (maxImageSelectable == 1 && maxVideoSelectable == 1));
+        return !countable && (maxSelectable == 1 || (maxImageSelectable == 1 && maxVideoSelectable == 1 && maxAudioSelectable == 1));
     }
 
     public boolean needOrientationRestriction() {
@@ -109,6 +116,10 @@ public final class SelectionSpec {
 
     public boolean onlyShowVideos() {
         return showSingleMediaType && MimeType.ofVideo().containsAll(mimeTypeSet);
+    }
+
+    public boolean onlyShowAudios() {
+        return showSingleMediaType && MimeType.ofAudio().containsAll(mimeTypeSet);
     }
 
     public boolean onlyShowGif() {

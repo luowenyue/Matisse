@@ -45,9 +45,10 @@ public class Item implements Parcelable {
     public final String mimeType;
     public final Uri uri;
     public final long size;
-    public final long duration; // only for video, in ms
+    public final long duration; // only for video and audio, in ms
+    public final String displayName; // only for audio
 
-    private Item(long id, String mimeType, long size, long duration) {
+    private Item(long id, String mimeType, long size, long duration, String displayName) {
         this.id = id;
         this.mimeType = mimeType;
         Uri contentUri;
@@ -55,6 +56,8 @@ public class Item implements Parcelable {
             contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         } else if (isVideo()) {
             contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        } else if (isAudio()) {
+            contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         } else {
             // ?
             contentUri = MediaStore.Files.getContentUri("external");
@@ -62,6 +65,7 @@ public class Item implements Parcelable {
         this.uri = ContentUris.withAppendedId(contentUri, id);
         this.size = size;
         this.duration = duration;
+        this.displayName = displayName;
     }
 
     private Item(Parcel source) {
@@ -70,13 +74,15 @@ public class Item implements Parcelable {
         uri = source.readParcelable(Uri.class.getClassLoader());
         size = source.readLong();
         duration = source.readLong();
+        displayName = source.readString();
     }
 
     public static Item valueOf(Cursor cursor) {
         return new Item(cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID)),
                 cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)),
                 cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)),
-                cursor.getLong(cursor.getColumnIndex("duration")));
+                cursor.getLong(cursor.getColumnIndex("duration")),
+                cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)));
     }
 
     @Override
@@ -91,6 +97,7 @@ public class Item implements Parcelable {
         dest.writeParcelable(uri, 0);
         dest.writeLong(size);
         dest.writeLong(duration);
+        dest.writeString(displayName);
     }
 
     public Uri getContentUri() {
@@ -113,6 +120,10 @@ public class Item implements Parcelable {
         return MimeType.isVideo(mimeType);
     }
 
+    public boolean isAudio() {
+        return MimeType.isAudio(mimeType);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Item)) {
@@ -126,7 +137,8 @@ public class Item implements Parcelable {
                 && (uri != null && uri.equals(other.uri)
                     || (uri == null && other.uri == null))
                 && size == other.size
-                && duration == other.duration;
+                && duration == other.duration
+                && displayName.equals(other.displayName);
     }
 
     @Override
@@ -139,6 +151,9 @@ public class Item implements Parcelable {
         result = 31 * result + uri.hashCode();
         result = 31 * result + Long.valueOf(size).hashCode();
         result = 31 * result + Long.valueOf(duration).hashCode();
+        if (displayName != null) {
+            result = 31 * result + displayName.hashCode();
+        }
         return result;
     }
 }

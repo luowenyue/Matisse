@@ -46,11 +46,14 @@ public class AlbumMediaLoader extends CursorLoader {
     private static final String SELECTION_ALL =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                    + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?)"
                     + " AND " + MediaStore.MediaColumns.SIZE + ">0";
     private static final String[] SELECTION_ALL_ARGS = {
             String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
             String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
+            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO),
     };
     // ===========================================================
 
@@ -68,6 +71,8 @@ public class AlbumMediaLoader extends CursorLoader {
     private static final String SELECTION_ALBUM =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                    + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?)"
                     + " AND "
                     + " bucket_id=?"
@@ -77,6 +82,7 @@ public class AlbumMediaLoader extends CursorLoader {
         return new String[]{
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
+                String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO),
                 albumId
         };
     }
@@ -148,6 +154,11 @@ public class AlbumMediaLoader extends CursorLoader {
                 selectionArgs =
                         getSelectionArgsForSingleMediaType(
                                 MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+            } else if (SelectionSpec.getInstance().onlyShowAudios()) {
+                selection = SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE;
+                selectionArgs =
+                        getSelectionArgsForSingleMediaType(
+                                MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO);
             } else {
                 selection = SELECTION_ALL;
                 selectionArgs = SELECTION_ALL_ARGS;
@@ -169,6 +180,11 @@ public class AlbumMediaLoader extends CursorLoader {
                 selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
                 selectionArgs = getSelectionAlbumArgsForSingleMediaType(
                         MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO,
+                        album.getId());
+            } else if (SelectionSpec.getInstance().onlyShowAudios()) {
+                selection = SELECTION_ALBUM_FOR_SINGLE_MEDIA_TYPE;
+                selectionArgs = getSelectionAlbumArgsForSingleMediaType(
+                        MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
                         album.getId());
             } else {
                 selection = SELECTION_ALBUM;
