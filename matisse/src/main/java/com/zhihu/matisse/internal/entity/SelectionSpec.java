@@ -61,6 +61,7 @@ public final class SelectionSpec {
     public boolean showPreview;
     public Drawable audioThumbnail;
     public Drawable audioPlaceholder;
+    public boolean changeSelectionOnSelectingOne;
 
     private SelectionSpec() {
     }
@@ -100,6 +101,7 @@ public final class SelectionSpec {
         showPreview = true;
         audioThumbnail = null;
         audioPlaceholder = null;
+        changeSelectionOnSelectingOne = false;
     }
 
     public boolean singleSelectionModeEnabled() {
